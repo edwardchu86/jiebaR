@@ -1,0 +1,455 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>jiebaR by qinwf</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">jiebaR</h1>
+        <p class="header">R语言中文分词  Chinese text segmentation with R.    </p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/qinwf/jiebaR/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/qinwf/jiebaR/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/qinwf/jiebaR">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/qinwf">qinwf</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a id="jiebar" class="anchor" href="#jiebar" aria-hidden="true"><span class="octicon octicon-link"></span></a>jiebaR</h1>
+
+<p>Linux : <a href="https://travis-ci.org/qinwf/jiebaR"><img src="https://travis-ci.org/qinwf/jiebaR.svg?branch=master" alt="Build Status"></a>　Mac : <a href="https://travis-ci.org/qinwf/jiebaR"><img src="https://travis-ci.org/qinwf/jiebaR.svg?branch=osx" alt="Build Status"></a>　Windows : <a href="https://ci.appveyor.com/project/qinwf53234/jiebar/branch/master"><img src="https://ci.appveyor.com/api/projects/status/k8swxpkue1caiiwi/branch/master?svg=true" alt="Build status"></a></p>
+
+<p><a href="https://github.com/fxsjy/jieba">"结巴"中文分词</a>的R语言版本，支持最大概率法（Maximum Probability），隐式马尔科夫模型（Hidden Markov Model），索引模型（QuerySegment），混合模型（MixSegment），共四种分词模式，同时有词性标注，关键词提取，文本Simhash相似度比较等功能。项目使用了<a href="https://github.com/RcppCore/Rcpp">Rcpp</a>和<a href="https://github.com/aszxqw/cppjieba">CppJieba</a>进行开发。</p>
+
+<h2>
+<a id="特性" class="anchor" href="#%E7%89%B9%E6%80%A7" aria-hidden="true"><span class="octicon octicon-link"></span></a>特性</h2>
+
+<ul>
+<li>支持 Windows，Linux，Mac 操作系统。</li>
+<li>通过Rcpp Modules实现同时加载多个分词系统,可以分别使用不同的分词模式和词库。</li>
+<li>支持多种分词模式、中文姓名识别、关键词提取、词性标注以及文本Simhash相似度比较等功能。</li>
+<li>支持加载自定义用户词库，设置词频、词性。</li>
+<li>同时支持简体中文、繁体中文分词。</li>
+<li>支持自动判断编码模式。</li>
+<li>比原<a href="https://github.com/fxsjy/jieba">"结巴"中文分词</a>速度快，是其他R分词包的5-20倍。</li>
+<li>安装简单，无需复杂设置。</li>
+<li>可以通过<a href="http://rpy.sourceforge.net/">Rpy2</a>，<a href="http://dahl.byu.edu/software/jvmr/">jvmr</a>等被其他语言调用。</li>
+<li>基于MIT协议。</li>
+</ul>
+
+<h2>
+<a id="github-版更新-v021" class="anchor" href="#github-%E7%89%88%E6%9B%B4%E6%96%B0-v021" aria-hidden="true"><span class="octicon octicon-link"></span></a>GitHub 版更新 v0.2.1</h2>
+
+<ul>
+<li>2X 分词速度</li>
+<li>快速模式</li>
+<li>修正特定环境下的编码转换问题</li>
+</ul>
+
+<h2>
+<a id="安装" class="anchor" href="#%E5%AE%89%E8%A3%85" aria-hidden="true"><span class="octicon octicon-link"></span></a>安装</h2>
+
+<p>通过CRAN安装:</p>
+
+<div class="highlight highlight-r"><pre>install.packages(<span class="pl-s1"><span class="pl-pds">"</span>jiebaR<span class="pl-pds">"</span></span>)
+library(<span class="pl-s1"><span class="pl-pds">"</span>jiebaR<span class="pl-pds">"</span></span>)</pre></div>
+
+<p>同时还可以通过Github安装<a href="https://ci.appveyor.com/project/qinwf53234/jiebar/branch/master/artifacts">开发版</a>,建议使用 gcc &gt;= 4.6 编译包：</p>
+
+<div class="highlight highlight-r"><pre>library(<span class="pl-vo">devtools</span>)
+install_github(<span class="pl-s1"><span class="pl-pds">"</span>qinwf/jiebaR<span class="pl-pds">"</span></span>)
+library(<span class="pl-s1"><span class="pl-pds">"</span>jiebaR<span class="pl-pds">"</span></span>)</pre></div>
+
+<h2>
+<a id="使用示例" class="anchor" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用示例</h2>
+
+<h3>
+<a id="分词" class="anchor" href="#%E5%88%86%E8%AF%8D" aria-hidden="true"><span class="octicon octicon-link"></span></a>分词</h3>
+
+<p>jiebaR提供了四种分词模式，可以通过<code>worker()</code>来初始化分词引擎，使用<code>segment()</code>进行分词。</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-c">##  接受默认参数，建立分词引擎 </span>
+<span class="pl-v">mixseg</span> <span class="pl-k">=</span> worker()
+
+<span class="pl-c">##  相当于：</span>
+<span class="pl-c">##       worker( type = "mix", dict = "inst/dict/jieba.dict.utf8",</span>
+<span class="pl-c">##               hmm  = "inst/dict/hmm_model.utf8",  ### HMM模型数据</span>
+<span class="pl-c">##               user = "inst/dict/user.dict.utf8") ### 用户自定义词库</span>
+
+<span class="pl-vo">mixseg</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>江州市长江大桥参加了长江大桥的通车仪式<span class="pl-pds">"</span></span>  <span class="pl-c">### &lt;= 分词运算符</span>
+
+<span class="pl-c">## 相当于 segment( "江州市长江大桥参加了长江大桥的通车仪式" , mixseg )</span>
+</pre></div>
+
+<div class="highlight highlight-r"><pre>[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>江州<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>市长<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>江大桥<span class="pl-pds">"</span></span>   <span class="pl-s1"><span class="pl-pds">"</span>参加<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>了<span class="pl-pds">"</span></span>       <span class="pl-s1"><span class="pl-pds">"</span>长江大桥<span class="pl-pds">"</span></span>
+[<span class="pl-c1">7</span>] <span class="pl-s1"><span class="pl-pds">"</span>的<span class="pl-pds">"</span></span>       <span class="pl-s1"><span class="pl-pds">"</span>通车<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>仪式<span class="pl-pds">"</span></span> </pre></div>
+
+<p>支持对文件进行分词：</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-vo">mixseg</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>./temp.dat<span class="pl-pds">"</span></span>  <span class="pl-c">### 自动判断输入文件编码模式，默认文件输出在同目录下。</span>
+
+<span class="pl-c">## segment( "./temp.dat" , mixseg )   </span></pre></div>
+
+<p>在加载分词引擎时，可以自定义词库路径，同时可以启动不同的引擎：</p>
+
+<p>最大概率法（MPSegment），负责根据Trie树构建有向无环图和进行动态规划算法，是分词算法的核心。</p>
+
+<p>隐式马尔科夫模型（HMMSegment）是根据基于人民日报等语料库构建的HMM模型来进行分词，主要算法思路是根据(B,E,M,S)四个状态来代表每个字的隐藏状态。 HMM模型由dict/hmm_model.utf8提供。分词算法即viterbi算法。</p>
+
+<p>混合模型（MixSegment）是四个分词引擎里面分词效果较好的类，结它合使用最大概率法和隐式马尔科夫模型。</p>
+
+<p>索引模型（QuerySegment）先使用混合模型进行切词，再对于切出来的较长的词，枚举句子中所有可能成词的情况，找出词库里存在。</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-v">mixseg2</span> <span class="pl-k">=</span> worker(<span class="pl-v">type</span>  <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>mix<span class="pl-pds">"</span></span>, <span class="pl-v">dict</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>dict/jieba.dict.utf8<span class="pl-pds">"</span></span>,
+                 <span class="pl-v">hmm</span>   <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>dict/hmm_model.utf8<span class="pl-pds">"</span></span>,  
+                 <span class="pl-v">user</span>  <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>dict/test.dict.utf8<span class="pl-pds">"</span></span>,
+                 <span class="pl-v">detect</span><span class="pl-k">=</span><span class="pl-c1">T</span>,      <span class="pl-v">symbol</span> <span class="pl-k">=</span> <span class="pl-c1">F</span>,
+                 <span class="pl-v">lines</span> <span class="pl-k">=</span> <span class="pl-c1">1e+05</span>, <span class="pl-v">output</span> <span class="pl-k">=</span> <span class="pl-c1">NULL</span>
+                 ) 
+<span class="pl-vo">mixseg2</span>   <span class="pl-c">### 输出worker的设置</span></pre></div>
+
+<div class="highlight highlight-r"><pre><span class="pl-vo">Worker</span> <span class="pl-vo">Type</span><span class="pl-k">:</span>  <span class="pl-vo">Mix</span> <span class="pl-vo">Segment</span>
+
+<span class="pl-vo">Detect</span> <span class="pl-vo">Encoding</span> <span class="pl-k">:</span>  <span class="pl-c1">TRUE</span>
+<span class="pl-vo">Default</span> <span class="pl-vo">Encoding</span><span class="pl-k">:</span>  <span class="pl-vo">UTF</span><span class="pl-k">-</span><span class="pl-c1">8</span>
+<span class="pl-vo">Keep</span> <span class="pl-vo">Symbols</span>    <span class="pl-k">:</span>  <span class="pl-c1">FALSE</span>
+<span class="pl-vo">Output</span> <span class="pl-vo">Path</span>     <span class="pl-k">:</span>  
+<span class="pl-vo">Write</span> <span class="pl-vo">File</span>      <span class="pl-k">:</span>  <span class="pl-c1">TRUE</span>
+<span class="pl-vo">Max</span> <span class="pl-vo">Read</span> <span class="pl-vo">Lines</span>  <span class="pl-k">:</span>  <span class="pl-c1">1e+05</span>
+
+<span class="pl-vo">Fixed</span> <span class="pl-vo">Model</span> <span class="pl-vo">Components</span><span class="pl-k">:</span>  
+
+<span class="pl-k">$</span><span class="pl-vo">dict</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>dict/jieba.dict.utf8<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">hmm</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>dict/hmm_model.utf8<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">user</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>dict/test.dict.utf8<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">detect</span> <span class="pl-k">$</span><span class="pl-vo">encoding</span> <span class="pl-k">$</span><span class="pl-vo">symbol</span> <span class="pl-k">$</span><span class="pl-vo">output</span> <span class="pl-k">$</span><span class="pl-vo">write</span> <span class="pl-k">$</span><span class="pl-vo">lines</span> <span class="pl-vo">can</span> <span class="pl-vo">be</span> <span class="pl-vo">reset</span>.</pre></div>
+
+<p>可以通过R语言常用的 <code>$</code>符号重设一些<code>worker</code>的参数设置，如 <code>WorkerName$symbol = T</code>，在输出中保留标点符号。一些参数在初始化的时候已经确定，无法修改， 可以通过<code>WorkerName$PrivateVarible</code>来获得这些信息。</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-vo">mixseg</span><span class="pl-k">$</span><span class="pl-vo">encoding</span>
+
+<span class="pl-vo">mixseg</span><span class="pl-k">$</span><span class="pl-v">detect</span> <span class="pl-k">=</span> <span class="pl-c1">F</span></pre></div>
+
+<p>可以自定义用户词库，推荐使用<a href="https://github.com/studyzy/imewlconverter">深蓝词库转换</a>构建分词词库，它可以快速地将搜狗细胞词库等输入法词库转换为jiebaR的词库格式。</p>
+
+<div class="highlight highlight-r"><pre>ShowDictPath()  <span class="pl-c">### 显示词典路径</span>
+EditDict()      <span class="pl-c">### 编辑用户词典</span>
+?EditDict()     <span class="pl-c">### 打开帮助系统</span></pre></div>
+
+<h3>
+<a id="快速模式" class="anchor" href="#%E5%BF%AB%E9%80%9F%E6%A8%A1%E5%BC%8F" aria-hidden="true"><span class="octicon octicon-link"></span></a>快速模式</h3>
+
+<p>无需使用<code>worker()</code>，使用默认参数启动引擎，并立即进行分词：</p>
+
+<div class="highlight highlight-r"><pre>library(<span class="pl-vo">jiebaR</span>)
+
+<span class="pl-vo">qseg</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>江州市长江大桥参加了长江大桥的通车仪式<span class="pl-pds">"</span></span> </pre></div>
+
+<div class="highlight highlight-r"><pre>[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>江州<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>市长<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>江大桥<span class="pl-pds">"</span></span>   <span class="pl-s1"><span class="pl-pds">"</span>参加<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>了<span class="pl-pds">"</span></span>       <span class="pl-s1"><span class="pl-pds">"</span>长江大桥<span class="pl-pds">"</span></span> <span class="pl-s1"><span class="pl-pds">"</span>的<span class="pl-pds">"</span></span>      
+[<span class="pl-c1">8</span>] <span class="pl-s1"><span class="pl-pds">"</span>通车<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>仪式<span class="pl-pds">"</span></span>   </pre></div>
+
+<p><code>qseg</code> ~ quick segmentation，使用默认分词模式，自动建立分词引擎，类似于<code>ggplot2</code>包里面的<code>qplot</code>函数。</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-c">### 第一次运行时，启动默认引擎 quick_worker，第二次运行，不再启动引擎。</span>
+<span class="pl-vo">qseg</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>这是测试文本。<span class="pl-pds">"</span></span> 
+</pre></div>
+
+<div class="highlight highlight-r"><pre>[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>这是<span class="pl-pds">"</span></span> <span class="pl-s1"><span class="pl-pds">"</span>测试<span class="pl-pds">"</span></span> <span class="pl-s1"><span class="pl-pds">"</span>文本<span class="pl-pds">"</span></span></pre></div>
+
+<div class="highlight highlight-r"><pre><span class="pl-c">### 效果相同</span>
+<span class="pl-vo">quick_worker</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span>  <span class="pl-s1"><span class="pl-pds">"</span>这是测试文本。<span class="pl-pds">"</span></span> 
+
+<span class="pl-vo">qseg</span></pre></div>
+
+<div class="highlight highlight-r"><pre><span class="pl-vo">Worker</span> <span class="pl-vo">Type</span><span class="pl-k">:</span>  <span class="pl-vo">Mix</span> <span class="pl-vo">Segment</span>
+
+<span class="pl-vo">Detect</span> <span class="pl-vo">Encoding</span> <span class="pl-k">:</span>  <span class="pl-c1">TRUE</span>
+<span class="pl-vo">Default</span> <span class="pl-vo">Encoding</span><span class="pl-k">:</span>  <span class="pl-vo">UTF</span><span class="pl-k">-</span><span class="pl-c1">8</span>
+<span class="pl-vo">Keep</span> <span class="pl-vo">Symbols</span>    <span class="pl-k">:</span>  <span class="pl-c1">FALSE</span>
+<span class="pl-vo">Output</span> <span class="pl-vo">Path</span>     <span class="pl-k">:</span>  <span class="pl-c1">NULL</span>
+<span class="pl-k">......</span>.</pre></div>
+
+<p>可以通过<code>qseg$</code>重设模型参数，重设模型参数将会修改以后每次默认启动的默认参数，如果只是希望单次修改模型参数，可以使用非快速模式的修改方式<code>quick_worker$</code>。</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-vo">qseg</span><span class="pl-k">$</span><span class="pl-v">type</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>mp<span class="pl-pds">"</span></span> <span class="pl-c">### 重设模型参数的同时，重新启动引擎。</span>
+
+<span class="pl-vo">qseg</span><span class="pl-k">$</span><span class="pl-vo">type</span>        <span class="pl-c">### 下次重新启动包是将使用现在的参数，构建模型。</span>
+
+<span class="pl-vo">quick_worker</span><span class="pl-k">$</span><span class="pl-v">detect</span> <span class="pl-k">=</span> <span class="pl-c1">T</span> <span class="pl-c">### 临时修改，对下次重新启动包时，没有影响。</span>
+
+get_qsegmodel()         <span class="pl-c">### 获得当前快速模式的默认参数</span>
+</pre></div>
+
+<h3>
+<a id="词性标注" class="anchor" href="#%E8%AF%8D%E6%80%A7%E6%A0%87%E6%B3%A8" aria-hidden="true"><span class="octicon octicon-link"></span></a>词性标注</h3>
+
+<p>可以使用 <code>&lt;=.tagger</code> 或者 <code>tag</code> 来进行分词和词性标注，词性标注使用混合模型模型分词，标注采用和 ictclas 兼容的标记法。</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-v">words</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>我爱北京天安门<span class="pl-pds">"</span></span>
+<span class="pl-v">tagger</span> <span class="pl-k">=</span> worker(<span class="pl-s1"><span class="pl-pds">"</span>tag<span class="pl-pds">"</span></span>)
+<span class="pl-vo">tagger</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-vo">words</span></pre></div>
+
+<div class="highlight highlight-r"><pre>     <span class="pl-vo">r</span>        <span class="pl-vo">v</span>       <span class="pl-vo">ns</span>       <span class="pl-vo">ns</span> 
+    <span class="pl-s1"><span class="pl-pds">"</span>我<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>爱<span class="pl-pds">"</span></span>   <span class="pl-s1"><span class="pl-pds">"</span>北京<span class="pl-pds">"</span></span> <span class="pl-s1"><span class="pl-pds">"</span>天安门<span class="pl-pds">"</span></span> </pre></div>
+
+<h3>
+<a id="关键词提取" class="anchor" href="#%E5%85%B3%E9%94%AE%E8%AF%8D%E6%8F%90%E5%8F%96" aria-hidden="true"><span class="octicon octicon-link"></span></a>关键词提取</h3>
+
+<p>关键词提取所使用逆向文件频率（IDF）文本语料库可以切换成自定义语料库的路径，使用方法与分词类似。<code>topn</code>参数为关键词的个数。</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-v">keys</span> <span class="pl-k">=</span> worker(<span class="pl-s1"><span class="pl-pds">"</span>keywords<span class="pl-pds">"</span></span>, <span class="pl-v">topn</span> <span class="pl-k">=</span> <span class="pl-c1">1</span>)
+<span class="pl-vo">keys</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>我爱北京天安门<span class="pl-pds">"</span></span>
+<span class="pl-vo">keys</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>一个文件路径.txt<span class="pl-pds">"</span></span></pre></div>
+
+<div class="highlight highlight-r"><pre>  <span class="pl-c1">8.9954</span> 
+<span class="pl-s1"><span class="pl-pds">"</span>天安门<span class="pl-pds">"</span></span> </pre></div>
+
+<h3>
+<a id="simhash-与海明距离" class="anchor" href="#simhash-%E4%B8%8E%E6%B5%B7%E6%98%8E%E8%B7%9D%E7%A6%BB" aria-hidden="true"><span class="octicon octicon-link"></span></a>Simhash 与海明距离</h3>
+
+<p>对中文文档计算出对应的simhash值。simhash是谷歌用来进行文本去重的算法，现在广泛应用在文本处理中。Simhash引擎先进行分词和关键词提取，后计算Simhash值和海明距离。</p>
+
+<div class="highlight highlight-r"><pre> <span class="pl-v">words</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>hello world!<span class="pl-pds">"</span></span>
+ <span class="pl-v">simhasher</span> <span class="pl-k">=</span> worker(<span class="pl-s1"><span class="pl-pds">"</span>simhash<span class="pl-pds">"</span></span>,<span class="pl-v">topn</span><span class="pl-k">=</span><span class="pl-c1">2</span>)
+ <span class="pl-vo">simhasher</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>江州市长江大桥参加了长江大桥的通车仪式<span class="pl-pds">"</span></span></pre></div>
+
+<div class="highlight highlight-r"><pre><span class="pl-k">$</span><span class="pl-vo">simhash</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>12882166450308878002<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">keyword</span>
+   <span class="pl-c1">22.3853</span>    <span class="pl-c1">8.69667</span> 
+<span class="pl-s1"><span class="pl-pds">"</span>长江大桥<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>江州<span class="pl-pds">"</span></span> </pre></div>
+
+<div class="highlight highlight-r"><pre>distance(<span class="pl-s1"><span class="pl-pds">"</span>江州市长江大桥参加了长江大桥的通车仪式<span class="pl-pds">"</span></span> , <span class="pl-s1"><span class="pl-pds">"</span>hello world!<span class="pl-pds">"</span></span>, <span class="pl-vo">simhasher</span>)
+</pre></div>
+
+<div class="highlight highlight-r"><pre><span class="pl-k">$</span><span class="pl-vo">distance</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>23<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">lhs</span>
+   <span class="pl-c1">22.3853</span>    <span class="pl-c1">8.69667</span> 
+<span class="pl-s1"><span class="pl-pds">"</span>长江大桥<span class="pl-pds">"</span></span>     <span class="pl-s1"><span class="pl-pds">"</span>江州<span class="pl-pds">"</span></span> 
+
+<span class="pl-k">$</span><span class="pl-vo">rhs</span>
+<span class="pl-c1">11.7392</span> <span class="pl-c1">11.7392</span> 
+<span class="pl-s1"><span class="pl-pds">"</span>hello<span class="pl-pds">"</span></span> <span class="pl-s1"><span class="pl-pds">"</span>world<span class="pl-pds">"</span></span> </pre></div>
+
+<h2>
+<a id="计划支持" class="anchor" href="#%E8%AE%A1%E5%88%92%E6%94%AF%E6%8C%81" aria-hidden="true"><span class="octicon octicon-link"></span></a>计划支持</h2>
+
+<ul>
+<li>支持 Windows , Linux , Mac 操作系统并行分词。</li>
+<li>简单的自然语言统计分析功能。</li>
+</ul>
+
+<h1>
+<a id="jiebar-1" class="anchor" href="#jiebar-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>jiebaR</h1>
+
+<p>This is a package for Chinese text segmentation, keyword extraction
+and speech tagging. <code>jiebaR</code> supports four
+types of segmentation modes: Maximum Probability, Hidden Markov Model, Query Segment and Mix Segment.</p>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Support Windows, Linux,and Mac.</li>
+<li>Using Rcpp Modules to load different segmentation worker at the same time.</li>
+<li>Support Chinese text segmentation, keyword extraction, speech tagging and simhash computation.</li>
+<li>Custom dictionary path.</li>
+<li>Support simplified Chinese and traditional Chinese.</li>
+<li>New words identification.</li>
+<li>Auto encoding detection.</li>
+<li>Fast text segmentation.</li>
+<li>Easy installation.</li>
+<li>MIT license.</li>
+</ul>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Install the latest development version from GitHub:</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-e">devtools</span><span class="pl-k">::</span>install_github(<span class="pl-s1"><span class="pl-pds">"</span>qinwf/jiebaR<span class="pl-pds">"</span></span>)</pre></div>
+
+<p>Install from <a href="http://cran.r-project.org/web/packages/jiebaR/index.html">CRAN</a>:</p>
+
+<div class="highlight highlight-r"><pre>install.packages(<span class="pl-s1"><span class="pl-pds">"</span>jiebaR<span class="pl-pds">"</span></span>)</pre></div>
+
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
+
+<h3>
+<a id="text-segmentation" class="anchor" href="#text-segmentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Text Segmentation</h3>
+
+<p>There are four segmentation models. You can use <code>worker()</code> to initialize a worker, and then use <code>&lt;=</code> or <code>segment()</code> to do the segmentation.</p>
+
+<div class="highlight highlight-r"><pre>library(<span class="pl-vo">jiebaR</span>)
+
+<span class="pl-c">##  Using default argument to initialize worker.</span>
+<span class="pl-v">cutter</span> <span class="pl-k">=</span> worker()
+
+<span class="pl-c">##       jiebar( type = "mix", dict = "dictpath/jieba.dict.utf8",</span>
+<span class="pl-c">##               hmm  = "dictpath/hmm_model.utf8",  ### HMM model data</span>
+<span class="pl-c">##               user = "dictpath/user.dict.utf8") ### user dictionary</span>
+
+<span class="pl-c">###  Note: Can not display Chinese character here.</span>
+
+<span class="pl-vo">cutter</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>This is a good day!<span class="pl-pds">"</span></span>  
+
+<span class="pl-c">## OR segment( "This is a good day!" , cutter )</span>
+</pre></div>
+
+<div class="highlight highlight-r"><pre>[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>This<span class="pl-pds">"</span></span> <span class="pl-s1"><span class="pl-pds">"</span>is<span class="pl-pds">"</span></span>   <span class="pl-s1"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>    <span class="pl-s1"><span class="pl-pds">"</span>good<span class="pl-pds">"</span></span> <span class="pl-s1"><span class="pl-pds">"</span>day<span class="pl-pds">"</span></span> </pre></div>
+
+<p>You can pipe a file path to cut file.</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-vo">cutter</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>./temp.dat<span class="pl-pds">"</span></span>  <span class="pl-c">### Auto encoding detection.</span>
+
+<span class="pl-c">## OR segment( "./temp.dat" , cutter )   </span></pre></div>
+
+<p>The package uses initialized engines for word segmentation. You
+can initialize multiple engines simultaneously.</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-v">cutter2</span> <span class="pl-k">=</span> worker(<span class="pl-v">type</span>  <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>mix<span class="pl-pds">"</span></span>, <span class="pl-v">dict</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>dict/jieba.dict.utf8<span class="pl-pds">"</span></span>,
+                 <span class="pl-v">hmm</span>   <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>dict/hmm_model.utf8<span class="pl-pds">"</span></span>,  
+                 <span class="pl-v">user</span>  <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>dict/test.dict.utf8<span class="pl-pds">"</span></span>,
+                 <span class="pl-v">detect</span><span class="pl-k">=</span><span class="pl-c1">T</span>,      <span class="pl-v">symbol</span> <span class="pl-k">=</span> <span class="pl-c1">F</span>,
+                 <span class="pl-v">lines</span> <span class="pl-k">=</span> <span class="pl-c1">1e+05</span>, <span class="pl-v">output</span> <span class="pl-k">=</span> <span class="pl-c1">NULL</span>
+                 ) 
+<span class="pl-vo">cutter2</span>   <span class="pl-c">### Print information of worker</span></pre></div>
+
+<div class="highlight highlight-r"><pre><span class="pl-vo">Worker</span> <span class="pl-vo">Type</span><span class="pl-k">:</span>  <span class="pl-vo">Mix</span> <span class="pl-vo">Segment</span>
+
+<span class="pl-vo">Detect</span> <span class="pl-vo">Encoding</span> <span class="pl-k">:</span>  <span class="pl-c1">TRUE</span>
+<span class="pl-vo">Default</span> <span class="pl-vo">Encoding</span><span class="pl-k">:</span>  <span class="pl-vo">UTF</span><span class="pl-k">-</span><span class="pl-c1">8</span>
+<span class="pl-vo">Keep</span> <span class="pl-vo">Symbols</span>    <span class="pl-k">:</span>  <span class="pl-c1">FALSE</span>
+<span class="pl-vo">Output</span> <span class="pl-vo">Path</span>     <span class="pl-k">:</span>  
+<span class="pl-vo">Write</span> <span class="pl-vo">File</span>      <span class="pl-k">:</span>  <span class="pl-c1">TRUE</span>
+<span class="pl-vo">Max</span> <span class="pl-vo">Read</span> <span class="pl-vo">Lines</span>  <span class="pl-k">:</span>  <span class="pl-c1">1e+05</span>
+
+<span class="pl-vo">Fixed</span> <span class="pl-vo">Model</span> <span class="pl-vo">Components</span><span class="pl-k">:</span>  
+
+<span class="pl-k">$</span><span class="pl-vo">dict</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>dict/jieba.dict.utf8<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">hmm</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>dict/hmm_model.utf8<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">user</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>dict/test.dict.utf8<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">detect</span> <span class="pl-k">$</span><span class="pl-vo">encoding</span> <span class="pl-k">$</span><span class="pl-vo">symbol</span> <span class="pl-k">$</span><span class="pl-vo">output</span> <span class="pl-k">$</span><span class="pl-vo">write</span> <span class="pl-k">$</span><span class="pl-vo">lines</span> <span class="pl-vo">can</span> <span class="pl-vo">be</span> <span class="pl-vo">reset</span>.</pre></div>
+
+<p>The model public settings can be modified and got using <code>$</code> , such as <code>WorkerName$symbol = T</code>. Some private settings are fixed when the engine is initialized, and you can get them by <code>WorkerName$PrivateVarible</code>.</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-vo">cutter</span><span class="pl-k">$</span><span class="pl-vo">encoding</span>
+
+<span class="pl-vo">cutter</span><span class="pl-k">$</span><span class="pl-v">detect</span> <span class="pl-k">=</span> <span class="pl-c1">F</span></pre></div>
+
+<p>Users can specify their own custom dictionary to be included in the jiebaR default dictionary. jiebaR is able to identify new words, but adding your own new words can ensure a higher accuracy. <a href="https://github.com/studyzy/imewlconverter">imewlconverter</a> is a good tools for dictionary construction.</p>
+
+<div class="highlight highlight-r"><pre>ShowDictPath()  <span class="pl-c">### Show path</span>
+EditDict()      <span class="pl-c">### Edit user dictionary</span>
+?EditDict()     <span class="pl-c">### For more information</span></pre></div>
+
+<h3>
+<a id="speech-tagging" class="anchor" href="#speech-tagging" aria-hidden="true"><span class="octicon octicon-link"></span></a>Speech Tagging</h3>
+
+<p>Speech Tagging function <code>&lt;=.tagger</code> or <code>tag</code> uses speech tagging worker to cut word and tags each word after segmentation, using labels compatible with ictclas.  <code>dict</code> <code>hmm</code> and <code>user</code> should be provided when initializing <code>jiebaR</code> worker.</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-v">words</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>hello world<span class="pl-pds">"</span></span>
+<span class="pl-v">tagger</span> <span class="pl-k">=</span> worker(<span class="pl-s1"><span class="pl-pds">"</span>tag<span class="pl-pds">"</span></span>)
+<span class="pl-vo">tagger</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-vo">words</span></pre></div>
+
+<div class="highlight highlight-r"><pre>      <span class="pl-vo">x</span>       <span class="pl-vo">x</span> 
+<span class="pl-s1"><span class="pl-pds">"</span>hello<span class="pl-pds">"</span></span> <span class="pl-s1"><span class="pl-pds">"</span>world<span class="pl-pds">"</span></span> </pre></div>
+
+<h3>
+<a id="keyword-extraction" class="anchor" href="#keyword-extraction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Keyword Extraction</h3>
+
+<p>Keyword Extraction worker use MixSegment model to cut word and use 
+ TF-IDF algorithm to find the keywords.  <code>dict</code>, <code>hmm</code>, 
+ <code>idf</code>, <code>stop_word</code> and <code>topn</code> should be provided when initializing  <code>jiebaR</code> worker.</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-v">keys</span> <span class="pl-k">=</span> worker(<span class="pl-s1"><span class="pl-pds">"</span>keywords<span class="pl-pds">"</span></span>, <span class="pl-v">topn</span> <span class="pl-k">=</span> <span class="pl-c1">1</span>)
+<span class="pl-vo">keys</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>words of fun<span class="pl-pds">"</span></span></pre></div>
+
+<div class="highlight highlight-r"><pre><span class="pl-c1">11.7392</span> 
+  <span class="pl-s1"><span class="pl-pds">"</span>fun<span class="pl-pds">"</span></span> </pre></div>
+
+<h3>
+<a id="simhash-distance" class="anchor" href="#simhash-distance" aria-hidden="true"><span class="octicon octicon-link"></span></a>Simhash Distance</h3>
+
+<p>Simhash worker can do keyword extraction and find 
+the keywords from two inputs, and then computes Hamming distance between them.</p>
+
+<div class="highlight highlight-r"><pre> <span class="pl-v">words</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>hello world<span class="pl-pds">"</span></span>
+ <span class="pl-v">simhasher</span> <span class="pl-k">=</span> worker(<span class="pl-s1"><span class="pl-pds">"</span>simhash<span class="pl-pds">"</span></span>,<span class="pl-v">topn</span><span class="pl-k">=</span><span class="pl-c1">1</span>)
+ <span class="pl-vo">simhasher</span> <span class="pl-k">&lt;</span><span class="pl-k">=</span> <span class="pl-vo">words</span></pre></div>
+
+<div class="highlight highlight-r"><pre> <span class="pl-k">$</span><span class="pl-vo">simhash</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>3804341492420753273<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">keyword</span>
+<span class="pl-c1">11.7392</span> 
+<span class="pl-s1"><span class="pl-pds">"</span>hello<span class="pl-pds">"</span></span> </pre></div>
+
+<div class="highlight highlight-r"><pre>distance(<span class="pl-s1"><span class="pl-pds">"</span>hello world<span class="pl-pds">"</span></span> , <span class="pl-s1"><span class="pl-pds">"</span>hello world!<span class="pl-pds">"</span></span> , <span class="pl-vo">simhasher</span>)</pre></div>
+
+<div class="highlight highlight-r"><pre><span class="pl-k">$</span><span class="pl-vo">distance</span>
+[<span class="pl-c1">1</span>] <span class="pl-s1"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span>
+
+<span class="pl-k">$</span><span class="pl-vo">lhs</span>
+<span class="pl-c1">11.7392</span> 
+<span class="pl-s1"><span class="pl-pds">"</span>hello<span class="pl-pds">"</span></span> 
+
+<span class="pl-k">$</span><span class="pl-vo">rhs</span>
+<span class="pl-c1">11.7392</span> 
+<span class="pl-s1"><span class="pl-pds">"</span>hello<span class="pl-pds">"</span></span> </pre></div>
+
+<h2>
+<a id="future-development" class="anchor" href="#future-development" aria-hidden="true"><span class="octicon octicon-link"></span></a>Future Development</h2>
+
+<ul>
+<li>Support parallel programming on Windows , Linux , Mac.</li>
+<li>Simple Natural Language Processing features.</li>
+</ul>
+
+<h2>
+<a id="more-information-and-issues" class="anchor" href="#more-information-and-issues" aria-hidden="true"><span class="octicon octicon-link"></span></a>More Information and Issues</h2>
+
+<p><a href="https://github.com/qinwf/jiebaR">https://github.com/qinwf/jiebaR</a></p>
+
+<p><a href="https://github.com/aszxqw/cppjieba">https://github.com/aszxqw/cppjieba</a></p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
